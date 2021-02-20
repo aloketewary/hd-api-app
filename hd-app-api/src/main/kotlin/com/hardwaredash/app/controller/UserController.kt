@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api")
 @Api(value = "UserApiService", tags = ["UserApi"])
 class UserController(
-    val userService: UserService
+    private val userService: UserService
 ) {
 
     @ApiOperation(value = "Get Application level config")

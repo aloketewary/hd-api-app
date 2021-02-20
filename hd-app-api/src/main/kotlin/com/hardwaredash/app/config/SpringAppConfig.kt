@@ -1,6 +1,8 @@
 package com.hardwaredash.app.config
 
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.web.multipart.commons.CommonsMultipartResolver
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
@@ -13,5 +15,10 @@ class SpringAppConfig : WebMvcConfigurer {
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowedOrigins("http://localhost:4200")
+    }
+
+    @Bean(name = ["multipartResolver"])
+    fun multipartResolver(): CommonsMultipartResolver {
+        return CommonsMultipartResolver()
     }
 }
