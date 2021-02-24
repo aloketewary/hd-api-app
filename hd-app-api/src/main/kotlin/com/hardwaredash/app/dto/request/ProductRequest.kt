@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 
 data class ProductRequest(
     val productName: String,
-    val productVariantRequest: ProductVariantRequest,
+    val productVariant: ProductVariantRequest,
     val isActive: Boolean,
 )
 

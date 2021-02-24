@@ -102,7 +102,7 @@ class ProductService(
                         extractedProductList.add(
                             ProductRequest(
                                 productName = productName,
-                                productVariantRequest = productVariantRequest,
+                                productVariant = productVariantRequest,
                                 isActive = true
                             )
                         )
@@ -120,18 +120,18 @@ class ProductService(
 
     private fun generateProductEntity(product: ProductRequest): ProductEntity {
         val productVariants = ProductVariants(
-            parentId = product.productVariantRequest.parentId,
-            variant = product.productVariantRequest.variant,
-            variantName = product.productVariantRequest.variantName,
-            stockTotal = product.productVariantRequest.stockTotal,
-            buyPrice = product.productVariantRequest.buyPrice,
-            wholeSalePrice = product.productVariantRequest.wholeSalePrice,
-            onSale = product.productVariantRequest.onSale,
-            onSalePrice = product.productVariantRequest.onSalePrice,
-            isActive = product.productVariantRequest.isActive,
+            parentId = product.productVariant.parentId,
+            variant = product.productVariant.variant,
+            variantName = product.productVariant.variantName,
+            stockTotal = product.productVariant.stockTotal,
+            buyPrice = product.productVariant.buyPrice,
+            wholeSalePrice = product.productVariant.wholeSalePrice,
+            onSale = product.productVariant.onSale,
+            onSalePrice = product.productVariant.onSalePrice,
+            isActive = product.productVariant.isActive,
             createdBy = "ADMIN",
             createdDate = OffsetDateTime.now(),
-            sellingPrice = product.productVariantRequest.sellingPrice,
+            sellingPrice = product.productVariant.sellingPrice,
         )
         return ProductEntity(
             productName = product.productName,
