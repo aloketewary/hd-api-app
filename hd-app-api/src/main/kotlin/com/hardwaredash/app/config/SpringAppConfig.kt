@@ -14,11 +14,10 @@ class SpringAppConfig : WebMvcConfigurer {
             .allowCredentials(true)
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowedHeaders("*")
-            .allowedOrigins("http://localhost:4200")
+            .allowedOrigins("http://localhost:4200",
+                "https://hardware-dash-app.herokuapp.com")
     }
 
     @Bean(name = ["multipartResolver"])
-    fun multipartResolver(): CommonsMultipartResolver {
-        return CommonsMultipartResolver()
-    }
+    fun multipartResolver(): CommonsMultipartResolver = CommonsMultipartResolver()
 }
