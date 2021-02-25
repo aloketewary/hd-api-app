@@ -22,6 +22,10 @@ class ProductMiddleware(
         TODO("ERROR")
     }
 
+    fun getAllByIds(ids: List<String>): MutableIterable<ProductEntity> {
+        return productDao.findAllById(ids)
+    }
+
     override fun getById(id: String): Optional<ProductEntity> {
         return productDao.findById(id)
     }
@@ -35,14 +39,22 @@ class ProductMiddleware(
     }
 
     override fun deleteById(id: String): Optional<ProductEntity> {
-        val configEntity = getById(id)
-        if (configEntity.isPresent) {
-            productDao.delete(configEntity.get())
+        val productEntity = getById(id)
+        if (productEntity.isPresent) {
+            productDao.delete(productEntity.get())
         }
-        return configEntity
+        return productEntity
     }
 
     fun insertAll(entityList: List<ProductEntity>): List<ProductEntity> {
         return productDao.saveAll(entityList)
+    }
+
+    fun deleteAllById(ids: List<String>): List<ProductEntity> {
+        val listOfProductEntity = getAllByIds(ids)
+        if (listOfProductEntity.toList().isNotEmpty()) {
+            productDao.deleteAll(listOfProductEntity)
+        }
+        return listOfProductEntity.toList()
     }
 }

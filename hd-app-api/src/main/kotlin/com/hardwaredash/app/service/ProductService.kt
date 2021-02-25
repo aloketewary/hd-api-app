@@ -2,15 +2,13 @@ package com.hardwaredash.app.service
 
 import com.hardwaredash.app.dto.request.ProductRequest
 import com.hardwaredash.app.dto.request.ProductVariantRequest
+import com.hardwaredash.app.dto.response.ConfigResponse
 import com.hardwaredash.app.dto.response.ProductResponse
 import com.hardwaredash.app.entity.ProductEntity
 import com.hardwaredash.app.entity.ProductVariants
 import com.hardwaredash.app.middleware.ProductMiddleware
 import com.hardwaredash.app.model.CommonHttpResponse
-import com.hardwaredash.app.util.convertToFile
-import com.hardwaredash.app.util.httpCommonError
-import com.hardwaredash.app.util.httpGetSuccess
-import com.hardwaredash.app.util.httpPostSuccess
+import com.hardwaredash.app.util.*
 import mu.KotlinLogging
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.stereotype.Service
@@ -140,6 +138,80 @@ class ProductService(
             createdBy = "ADMIN",
             createdDate = OffsetDateTime.now(),
         )
+    }
+
+    fun update(id: String, product: ProductRequest): CommonHttpResponse<ProductResponse> {
+        logger.info { "Update existing config id = $id where data = $product" }
+        return try {
+            val productById = productMiddleware.getById(id)
+            when {
+                productById.isPresent -> {
+                    val productEntity = ProductEntity(
+                        id = productById.get().id,
+                        productName = product.productName,
+                        productVariants = ProductVariants(
+                            id = productById.get().productVariants.id,
+                            isActive = product.isActive,
+                            wholeSalePrice = product.productVariant.wholeSalePrice,
+                            variantName = product.productVariant.variantName,
+                            stockTotal = product.productVariant.stockTotal,
+                            parentId = product.productVariant.parentId,
+                            buyPrice = product.productVariant.buyPrice,
+                            onSale = product.productVariant.onSale,
+                            onSalePrice = product.productVariant.onSalePrice,
+                            sellingPrice = product.productVariant.sellingPrice,
+                            variant = product.productVariant.variant,
+                            createdBy = productById.get().productVariants.createdBy,
+                            createdDate = productById.get().productVariants.createdDate,
+                            modifiedBy = "ADMIN",
+                            modifiedDate = OffsetDateTime.now()
+                        ),
+                        isActive = product.isActive,
+                        createdBy = productById.get().createdBy,
+                        createdDate = productById.get().createdDate,
+                        modifiedBy = "ADMIN",
+                        modifiedDate = OffsetDateTime.now()
+                    )
+                    val updatedProduct = productMiddleware.update(productEntity)
+                    httpPatchSuccess(updatedProduct.convertToResponse(), "Config updated success")
+                }
+                else -> httpCommonError(Exception("No Config found with id=$id"))
+            }
+        } catch (e: Exception) {
+            logger.error { e }
+            httpCommonError(e)
+        }
+    }
+
+    fun delete(id: String): CommonHttpResponse<ProductResponse> {
+        logger.info { "Delete existing config where id = $id" }
+        return try {
+            val deleteById = productMiddleware.deleteById(id)
+            if (deleteById.isPresent) {
+                httpDeleteSuccess(deleteById.get().convertToResponse())
+            } else {
+                httpCommonError(Exception("Delete Failure for id=$id"))
+            }
+        } catch (e: Exception) {
+            logger.error { e }
+            httpCommonError(e)
+        }
+    }
+
+    fun deleteAllById(ids: String): CommonHttpResponse<List<ProductResponse>> {
+        logger.info { "Delete existing config where id = $ids" }
+        return try {
+            val idList = ids.split(",")
+            val deleteByIds = productMiddleware.deleteAllById(idList)
+            if (deleteByIds.isNotEmpty()) {
+                httpDeleteSuccess(deleteByIds.map { it.convertToResponse() })
+            } else {
+                httpCommonError(Exception("Delete Failure for id=$ids"))
+            }
+        } catch (e: Exception) {
+            logger.error { e }
+            httpCommonError(e)
+        }
     }
 
 }
