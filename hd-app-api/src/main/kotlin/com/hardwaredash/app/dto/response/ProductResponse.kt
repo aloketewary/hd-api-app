@@ -23,4 +23,6 @@ data class ProductVariantResponse(
     val onSalePrice: Double,
     val sellingPrice: Double,
     val isActive: Boolean,
+    val buyPriceUnit: String,
+    val sellingPriceUnit: String
 )

@@ -37,9 +37,11 @@ data class ProductVariants(
     @Field("stock_total") val stockTotal: Int,
     @Field("whole_sale_price") val wholeSalePrice: Double,
     @Field("buy_price") val buyPrice: Double,
+    @Field("buy_price_unit") val buyPriceUnit: String,
     @Field("on_sale") val onSale: Boolean,
     @Field("on_sale_price") val onSalePrice: Double,
     @Field("selling_price") val sellingPrice: Double,
+    @Field("selling_price_unit") val sellingPriceUnit: String,
     @Field("is_active") val isActive: Boolean,
     @Field("created_by") val createdBy: String?,
     @Field("created_date") val createdDate: OffsetDateTime?,
@@ -58,7 +60,9 @@ data class ProductVariants(
             onSale = this.onSale,
             onSalePrice = this.onSalePrice,
             sellingPrice = this.sellingPrice,
-            isActive = this.isActive
+            isActive = this.isActive,
+            buyPriceUnit = this.buyPriceUnit,
+            sellingPriceUnit = this.sellingPriceUnit
         )
     }
 }

@@ -71,6 +71,8 @@ class ProductService(
                         var onSalePrice = 0.0
                         var wholeSalePrice = 0.0
                         var sellingPrice = 0.0
+                        var buyPriceUnit = ""
+                        var sellingPriceUnit = ""
                         for (j in 1..lastCellNum) {
                             when (j) {
                                 1 -> productName = currentRow.getCell(j).toString()
@@ -78,11 +80,13 @@ class ProductService(
                                 3 -> variantName = currentRow.getCell(j).toString()
                                 4 -> parentId = currentRow.getCell(j).toString().toDouble().toInt().toString()
                                 5 -> buyPrice = currentRow.getCell(j).toString().toDouble()
-                                6 -> stockTotal = currentRow.getCell(j).toString().toDouble().toInt()
-                                7 -> onSale = currentRow.getCell(j).toString().toBoolean()
-                                8 -> onSalePrice = currentRow.getCell(j).toString().toDouble()
-                                9 -> wholeSalePrice = currentRow.getCell(j).toString().toDouble()
-                                10 -> sellingPrice = currentRow.getCell(j).toString().toDouble()
+                                6 -> buyPriceUnit = currentRow.getCell(j).toString()
+                                7 -> stockTotal = currentRow.getCell(j).toString().toDouble().toInt()
+                                8 -> onSale = currentRow.getCell(j).toString().toBoolean()
+                                9 -> onSalePrice = currentRow.getCell(j).toString().toDouble()
+                                10 -> wholeSalePrice = currentRow.getCell(j).toString().toDouble()
+                                11 -> sellingPrice = currentRow.getCell(j).toString().toDouble()
+                                12 -> sellingPriceUnit = currentRow.getCell(j).toString()
                             }
                         }
                         val productVariantRequest = ProductVariantRequest(
@@ -95,7 +99,9 @@ class ProductService(
                             stockTotal = stockTotal,
                             variantName = variantName,
                             wholeSalePrice = wholeSalePrice,
-                            sellingPrice = sellingPrice
+                            sellingPrice = sellingPrice,
+                            buyPriceUnit = buyPriceUnit,
+                            sellingPriceUnit = sellingPriceUnit
                         )
                         extractedProductList.add(
                             ProductRequest(
@@ -130,6 +136,8 @@ class ProductService(
             createdBy = "ADMIN",
             createdDate = OffsetDateTime.now(),
             sellingPrice = product.productVariant.sellingPrice,
+            buyPriceUnit = product.productVariant.buyPriceUnit,
+            sellingPriceUnit = product.productVariant.sellingPriceUnit,
         )
         return ProductEntity(
             productName = product.productName,
@@ -164,7 +172,9 @@ class ProductService(
                             createdBy = productById.get().productVariants.createdBy,
                             createdDate = productById.get().productVariants.createdDate,
                             modifiedBy = "ADMIN",
-                            modifiedDate = OffsetDateTime.now()
+                            modifiedDate = OffsetDateTime.now(),
+                            buyPriceUnit = productById.get().productVariants.buyPriceUnit,
+                            sellingPriceUnit = productById.get().productVariants.sellingPriceUnit
                         ),
                         isActive = product.isActive,
                         createdBy = productById.get().createdBy,

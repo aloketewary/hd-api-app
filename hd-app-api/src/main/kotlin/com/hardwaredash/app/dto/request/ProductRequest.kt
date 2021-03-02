@@ -20,4 +20,6 @@ data class ProductVariantRequest(
     val onSalePrice: Double,
     val isActive: Boolean,
     val sellingPrice: Double,
+    val buyPriceUnit: String,
+    val sellingPriceUnit: String,
 )
