@@ -1,7 +1,7 @@
 package com.hardwaredash.app.entity
 
-import com.hardwaredash.app.dto.response.ProductResponse
-import com.hardwaredash.app.dto.response.ProductVariantResponse
+import com.hardwaredash.app.dto.ProductResponse
+import com.hardwaredash.app.dto.ProductVariantResponse
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
@@ -37,6 +37,8 @@ data class ProductVariants(
     @Field("stock_total") val stockTotal: Int,
     @Field("whole_sale_price") val wholeSalePrice: Double,
     @Field("buy_price") val buyPrice: Double,
+    @Field("unit") val unit: String,
+    @Field("multi_text") val multiText: String,
     @Field("on_sale") val onSale: Boolean,
     @Field("on_sale_price") val onSalePrice: Double,
     @Field("selling_price") val sellingPrice: Double,
@@ -58,7 +60,9 @@ data class ProductVariants(
             onSale = this.onSale,
             onSalePrice = this.onSalePrice,
             sellingPrice = this.sellingPrice,
-            isActive = this.isActive
+            isActive = this.isActive,
+            unit = this.unit,
+            multiText = this.multiText
         )
     }
 }

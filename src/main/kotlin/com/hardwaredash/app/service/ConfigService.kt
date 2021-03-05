@@ -1,7 +1,7 @@
 package com.hardwaredash.app.service
 
-import com.hardwaredash.app.dto.request.ConfigRequest
-import com.hardwaredash.app.dto.response.ConfigResponse
+import com.hardwaredash.app.dto.ConfigRequest
+import com.hardwaredash.app.dto.ConfigResponse
 import com.hardwaredash.app.entity.ConfigEntity
 import com.hardwaredash.app.middleware.ConfigMiddleware
 import com.hardwaredash.app.model.CommonHttpResponse
@@ -16,7 +16,7 @@ private val logger = KotlinLogging.logger {}
 class ConfigService(
     private val configMiddleware: ConfigMiddleware
 ) {
-    fun getAllConfig(usedFor: String): CommonHttpResponse<Map<String, String>> {
+    fun getAllConfig(usedFor: String): CommonHttpResponse<Map<String, Any>> {
         logger.info { "Get all config for = $usedFor" }
         return try {
             val allConfig = configMiddleware.getAllConfig(usedFor)

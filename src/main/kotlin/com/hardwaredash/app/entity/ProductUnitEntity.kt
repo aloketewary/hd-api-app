@@ -1,18 +1,19 @@
 package com.hardwaredash.app.entity
 
-import com.hardwaredash.app.dto.ConfigResponse
+import com.hardwaredash.app.dto.ProductUnitResponse
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 import java.time.OffsetDateTime
 
-
-@Document(collection = "configs")
-data class ConfigEntity(
+@Document(collection = "product_unit")
+data class ProductUnitEntity(
     @Id val id: String? = null,
-    @Field val key: String,
-    @Field val value: String,
-    @Field("used_for") val usedFor: String,
+    @Field val name: String,
+    @Field val unit: String,
+    @Field("multiple") val multiple: Double,
+    @Field("multiple_with") val multipleWith: String? = null,
+    @Field("read_only") val readOnly: Boolean,
     @Field("is_active") val isActive: Boolean,
     @Field("created_by") val createdBy: String?,
     @Field("created_date") val createdDate: OffsetDateTime?,
@@ -20,13 +21,15 @@ data class ConfigEntity(
     @Field("modified_date") val modifiedDate: OffsetDateTime? = null
 
 ) {
-    fun convertToDtoResponse(): ConfigResponse {
-        return ConfigResponse(
+    fun convertToDtoResponse(): ProductUnitResponse {
+        return ProductUnitResponse(
             id = this.id,
-            key = this.key,
-            value = this.value,
+            name = this.name,
+            unit = this.unit,
             isActive = this.isActive,
-            usedFor = this.usedFor
+            multiple = this.multiple,
+            multipleWith = this.multipleWith,
+            readOnly = this.readOnly
         )
     }
 }

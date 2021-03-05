@@ -1,9 +1,8 @@
 package com.hardwaredash.app.service
 
-import com.hardwaredash.app.dto.request.ProductRequest
-import com.hardwaredash.app.dto.request.ProductVariantRequest
-import com.hardwaredash.app.dto.response.ConfigResponse
-import com.hardwaredash.app.dto.response.ProductResponse
+import com.hardwaredash.app.dto.ProductRequest
+import com.hardwaredash.app.dto.ProductResponse
+import com.hardwaredash.app.dto.ProductVariantRequest
 import com.hardwaredash.app.entity.ProductEntity
 import com.hardwaredash.app.entity.ProductVariants
 import com.hardwaredash.app.middleware.ProductMiddleware
@@ -71,6 +70,8 @@ class ProductService(
                         var onSalePrice = 0.0
                         var wholeSalePrice = 0.0
                         var sellingPrice = 0.0
+                        var unit = ""
+                        var multiText = ""
                         for (j in 1..lastCellNum) {
                             when (j) {
                                 1 -> productName = currentRow.getCell(j).toString()
@@ -78,11 +79,13 @@ class ProductService(
                                 3 -> variantName = currentRow.getCell(j).toString()
                                 4 -> parentId = currentRow.getCell(j).toString().toDouble().toInt().toString()
                                 5 -> buyPrice = currentRow.getCell(j).toString().toDouble()
-                                6 -> stockTotal = currentRow.getCell(j).toString().toDouble().toInt()
-                                7 -> onSale = currentRow.getCell(j).toString().toBoolean()
-                                8 -> onSalePrice = currentRow.getCell(j).toString().toDouble()
-                                9 -> wholeSalePrice = currentRow.getCell(j).toString().toDouble()
-                                10 -> sellingPrice = currentRow.getCell(j).toString().toDouble()
+                                6 -> unit = currentRow.getCell(j).toString()
+                                7 -> stockTotal = currentRow.getCell(j).toString().toDouble().toInt()
+                                8 -> onSale = currentRow.getCell(j).toString().toBoolean()
+                                9 -> onSalePrice = currentRow.getCell(j).toString().toDouble()
+                                10 -> wholeSalePrice = currentRow.getCell(j).toString().toDouble()
+                                11 -> sellingPrice = currentRow.getCell(j).toString().toDouble()
+                                12 -> multiText = currentRow.getCell(j).toString()
                             }
                         }
                         val productVariantRequest = ProductVariantRequest(
@@ -95,7 +98,9 @@ class ProductService(
                             stockTotal = stockTotal,
                             variantName = variantName,
                             wholeSalePrice = wholeSalePrice,
-                            sellingPrice = sellingPrice
+                            sellingPrice = sellingPrice,
+                            unit = unit,
+                            multiText = multiText
                         )
                         extractedProductList.add(
                             ProductRequest(
@@ -130,6 +135,8 @@ class ProductService(
             createdBy = "ADMIN",
             createdDate = OffsetDateTime.now(),
             sellingPrice = product.productVariant.sellingPrice,
+            unit = product.productVariant.unit,
+            multiText = product.productVariant.multiText,
         )
         return ProductEntity(
             productName = product.productName,
@@ -164,7 +171,9 @@ class ProductService(
                             createdBy = productById.get().productVariants.createdBy,
                             createdDate = productById.get().productVariants.createdDate,
                             modifiedBy = "ADMIN",
-                            modifiedDate = OffsetDateTime.now()
+                            modifiedDate = OffsetDateTime.now(),
+                            unit = productById.get().productVariants.unit,
+                            multiText = productById.get().productVariants.multiText
                         ),
                         isActive = product.isActive,
                         createdBy = productById.get().createdBy,

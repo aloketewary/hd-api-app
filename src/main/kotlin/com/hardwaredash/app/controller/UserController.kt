@@ -1,6 +1,6 @@
 package com.hardwaredash.app.controller
 
-import com.hardwaredash.app.dto.request.ConfigRequest
+import com.hardwaredash.app.dto.ConfigRequest
 import com.hardwaredash.app.service.UserService
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation

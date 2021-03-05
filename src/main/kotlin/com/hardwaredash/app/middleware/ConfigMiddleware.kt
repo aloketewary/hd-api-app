@@ -2,6 +2,7 @@ package com.hardwaredash.app.middleware
 
 import com.hardwaredash.app.entity.ConfigEntity
 import com.hardwaredash.app.repository.ConfigDao
+import com.hardwaredash.app.repository.ProductUnitDao
 import com.hardwaredash.app.util.BasicCrud
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -10,11 +11,18 @@ import java.util.*
 
 @Service
 class ConfigMiddleware(
-    private val configDao: ConfigDao
+    private val configDao: ConfigDao,
+    private val productUnitDao: ProductUnitDao,
 ) : BasicCrud<String, ConfigEntity> {
-    fun getAllConfig(usedFor: String): Map<String, String> {
+    fun getAllConfig(usedFor: String): Map<String, Any> {
+        val configMap = mutableMapOf<String, Any>()
         val configList = configDao.findAll()
-        return configList.filter { it.isActive }.map { it.key to it.value }.toMap()
+        val unitList = productUnitDao.findAll()
+        val configMapValue = configList.filter { it.isActive }.map { it.key to it.value }.toMap()
+        val unitMapValue = unitList.filter { it.isActive }.map { it.unit to it.name }.toMap()
+        configMap.putAll(configMapValue)
+        configMap.putAll(unitMapValue)
+        return configMap
     }
 
     override fun getAll(pageable: Pageable): Page<ConfigEntity> {
