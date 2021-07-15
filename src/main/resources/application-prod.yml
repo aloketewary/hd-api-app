@@ -1,8 +1,5 @@
 #jackson
 spring:
-  config:
-    activate:
-      on-profile: prod
   jackson:
     serialization:
       indent-output: true
@@ -16,7 +13,7 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 name: prod-YAML
-environment: production
+environment: prod
 enabled: true
 server:
   servlet:
@@ -25,8 +22,8 @@ server:
 logging:
   level:
     root: ERROR
-    org.springframework.web: ERROR
-    com.hardwaredash: DEBUG
+    org.springframework.web: TRACE
+    com.hardwaredash: TRACE
     org.hibernate: ERROR
   pattern:
     file: "%d{dd-MM-yyyy} | %d{HH:mm:ss.SSS} | %-20.20thread | %5p | %-25.25logger{25} | %m%n"
