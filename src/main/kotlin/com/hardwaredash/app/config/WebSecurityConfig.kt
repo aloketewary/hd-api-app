@@ -79,7 +79,7 @@ class WebSecurityConfig(
                 "/**/api-docs/**"
             )
             .permitAll()
-            .antMatchers("/api/v1/auth/signin", "/api/**/config").permitAll()
+            .antMatchers("/api/v1/auth/signin", "/api/v1/auth/signup", "/api/**/config").permitAll()
             .antMatchers("/api/test/**").permitAll()
             .antMatchers("/swagger-ui/**").permitAll()
             .antMatchers("/swagger-resources/**").permitAll()

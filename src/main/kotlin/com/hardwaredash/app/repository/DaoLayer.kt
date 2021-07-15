@@ -28,3 +28,6 @@ interface UserDao : MongoRepository<UserEntity, String> {
 interface RoleDao : MongoRepository<RoleEntity, String> {
     fun findByName(name: RoleEnum): Optional<RoleEntity>
 }
+
+@Repository
+interface ProductVariantDao : MongoRepository<ProductVariants, String>

@@ -18,10 +18,10 @@ class ConfigMiddleware(
         val configMap = mutableMapOf<String, Any>()
         val configList = configDao.findAll()
         val unitList = productUnitDao.findAll()
-        val configMapValue = configList.filter { it.isActive }.associate { it.key to it.value }
-        val unitMapValue = unitList.filter { it.isActive }.associate { it.unit to it.name }
+        val configMapValue = configList.filter { it.isActive }.map { it.key to it.value }.toMap()
+        val unitMapValue = unitList.filter { it.isActive }.map { it.convertToDtoResponse() }
         configMap.putAll(configMapValue)
-        configMap.putAll(unitMapValue)
+        configMap["UNITS"] = unitMapValue
         return configMap
     }
 

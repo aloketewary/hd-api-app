@@ -6,6 +6,7 @@ import com.hardwaredash.app.dto.ProductVariantRequest
 import com.hardwaredash.app.entity.ProductEntity
 import com.hardwaredash.app.entity.ProductVariants
 import com.hardwaredash.app.middleware.ProductMiddleware
+import com.hardwaredash.app.middleware.ProductVariantMiddleware
 import com.hardwaredash.app.model.CommonHttpResponse
 import com.hardwaredash.app.service.ProductService
 import com.hardwaredash.app.util.*
@@ -20,7 +21,8 @@ private val logger = KotlinLogging.logger {}
 
 @Service
 class ProductServiceImpl(
-    private val productMiddleware: ProductMiddleware
+    private val productMiddleware: ProductMiddleware,
+    private val productVariantMiddleware: ProductVariantMiddleware
 ): ProductService {
 
     override fun getAllProducts(): CommonHttpResponse<List<ProductResponse>> {
@@ -38,7 +40,9 @@ class ProductServiceImpl(
     override fun insert(product: ProductRequest): CommonHttpResponse<ProductResponse> {
         logger.info { "Insert new product where data = $product" }
         return try {
-            val productEntity = generateProductEntity(product)
+            val productVariants = generateProductVariantsEntity(product.productVariant)
+            val insertedProductVariant = productVariantMiddleware.insert(productVariants)
+            val productEntity = generateProductEntity(product, insertedProductVariant)
             val savedProduct = productMiddleware.insert(productEntity)
             val productResponse = savedProduct.convertToResponse()
             httpPostSuccess(productResponse, "Product Created success")
@@ -58,6 +62,7 @@ class ProductServiceImpl(
                     val sheet = book.getSheet("Products")
                     val lastRowNum = sheet.lastRowNum
                     val extractedProductList = mutableListOf<ProductRequest>()
+                    val extractedProductVariantList = mutableListOf<ProductVariantRequest>()
                     for (i in 1..lastRowNum) {
                         val currentRow = sheet.getRow(i)
                         val lastCellNum = currentRow.lastCellNum
@@ -103,6 +108,7 @@ class ProductServiceImpl(
                             unit = unit,
                             multiText = multiText
                         )
+                        extractedProductVariantList.add(productVariantRequest)
                         extractedProductList.add(
                             ProductRequest(
                                 productName = productName,
@@ -111,7 +117,10 @@ class ProductServiceImpl(
                             )
                         )
                     }
-                    val entityList = extractedProductList.map { generateProductEntity(it) }
+                    val productVariantList = productVariantMiddleware.insertAll(extractedProductVariantList.map {
+                        generateProductVariantsEntity(it)
+                    })
+                    val entityList = extractedProductList.mapIndexed { index, product -> generateProductEntity(product, productVariantList[index]) }
                     productMiddleware.insertAll(entityList)
                     httpPostSuccess("${extractedProductList.size} Product(s) inserted", "Bulk upload success")
                 }
@@ -122,23 +131,7 @@ class ProductServiceImpl(
     }
 
 
-    private fun generateProductEntity(product: ProductRequest): ProductEntity {
-        val productVariants = ProductVariants(
-            parentId = product.productVariant.parentId,
-            variant = product.productVariant.variant,
-            variantName = product.productVariant.variantName,
-            stockTotal = product.productVariant.stockTotal,
-            buyPrice = product.productVariant.buyPrice,
-            wholeSalePrice = product.productVariant.wholeSalePrice,
-            onSale = product.productVariant.onSale,
-            onSalePrice = product.productVariant.onSalePrice,
-            isActive = product.productVariant.isActive,
-            createdBy = "ADMIN",
-            createdDate = OffsetDateTime.now(),
-            sellingPrice = product.productVariant.sellingPrice,
-            unit = product.productVariant.unit,
-            multiText = product.productVariant.multiText,
-        )
+    private fun generateProductEntity(product: ProductRequest, productVariants: ProductVariants): ProductEntity {
         return ProductEntity(
             productName = product.productName,
             productVariants = productVariants,
@@ -147,6 +140,23 @@ class ProductServiceImpl(
             createdDate = OffsetDateTime.now(),
         )
     }
+
+    private fun generateProductVariantsEntity(productVariant: ProductVariantRequest): ProductVariants = ProductVariants(
+            parentId = productVariant.parentId,
+            variant = productVariant.variant,
+            variantName = productVariant.variantName,
+            stockTotal = productVariant.stockTotal,
+            buyPrice = productVariant.buyPrice,
+            wholeSalePrice = productVariant.wholeSalePrice,
+            onSale = productVariant.onSale,
+            onSalePrice = productVariant.onSalePrice,
+            isActive = productVariant.isActive,
+            createdBy = "ADMIN",
+            createdDate = OffsetDateTime.now(),
+            sellingPrice = productVariant.sellingPrice,
+            unit = productVariant.unit,
+            multiText = productVariant.multiText,
+        )
 
     override fun update(id: String, product: ProductRequest): CommonHttpResponse<ProductResponse> {
         logger.info { "Update existing config id = $id where data = $product" }
