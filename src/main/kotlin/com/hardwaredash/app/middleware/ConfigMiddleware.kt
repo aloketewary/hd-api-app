@@ -18,16 +18,15 @@ class ConfigMiddleware(
         val configMap = mutableMapOf<String, Any>()
         val configList = configDao.findAll()
         val unitList = productUnitDao.findAll()
-        val configMapValue = configList.filter { it.isActive }.map { it.key to it.value }.toMap()
-        val unitMapValue = unitList.filter { it.isActive }.map { it.unit to it.name }.toMap()
+        val configMapValue = configList.filter { it.isActive }.associate { it.key to it.value }
+        val unitMapValue = unitList.filter { it.isActive }.associate { it.unit to it.name }
         configMap.putAll(configMapValue)
         configMap.putAll(unitMapValue)
         return configMap
     }
 
     override fun getAll(pageable: Pageable): Page<ConfigEntity> {
-        configDao.findAll()
-        TODO("ERROR")
+        return configDao.findAll(pageable)
     }
 
     override fun getById(id: String): Optional<ConfigEntity> {

@@ -47,3 +47,16 @@ data class ProductUnitResponse(
     val readOnly: Boolean,
     val multipleWith: String? = null,
 )
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class MessageResponse(var message: String)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class JwtResponse(
+    var accessToken: String,
+    var id: String?,
+    var email: String,
+    val roles: List<String>
+) {
+    var tokenType = "Bearer"
+}

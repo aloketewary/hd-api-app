@@ -17,10 +17,7 @@ class ProductMiddleware(
         return productList.filter { it.isActive }.toList()
     }
 
-    override fun getAll(pageable: Pageable): Page<ProductEntity> {
-        productDao.findAll()
-        TODO("ERROR")
-    }
+    override fun getAll(pageable: Pageable): Page<ProductEntity> = productDao.findAll(pageable)
 
     fun getAllByIds(ids: List<String>): MutableIterable<ProductEntity> {
         return productDao.findAllById(ids)

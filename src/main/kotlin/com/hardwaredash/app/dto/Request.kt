@@ -2,9 +2,13 @@ package com.hardwaredash.app.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
+import javax.validation.constraints.Email
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.Size
+
 
 @ApiModel("Product Unit Request")
-data class ProductUnitRequest (
+data class ProductUnitRequest(
     val id: String? = null,
     val name: String,
     val unit: String,
@@ -45,4 +49,19 @@ data class ConfigRequest(
     val usedFor: String,
     @JsonProperty("is_active")
     val isActive: Boolean,
+)
+
+@ApiModel("Signup Request")
+data class SignupRequest(
+    @Size(max = 50) @NotBlank @Email
+    val email: String,
+    val roles: Set<String>,
+    @Size(min = 6, max = 40)
+    val password: @NotBlank String
+)
+
+@ApiModel("Login Request")
+class LoginRequest(
+    val username: @NotBlank String,
+    val password: @NotBlank String
 )

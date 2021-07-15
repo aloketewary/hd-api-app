@@ -1,0 +1,48 @@
+#jackson
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jackson:
+    serialization:
+      indent-output: true
+      write-dates-as-timestamps: false
+      fail-on-empty-beans: false
+    deserialization:
+      fail-on-unknown-properties: false
+  #multipart max size
+  http:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+name: prod-YAML
+environment: production
+enabled: true
+server:
+  servlet:
+    context-path: /hardware
+  #Logging
+logging:
+  level:
+    root: ERROR
+    org.springframework.web: ERROR
+    com.hardwaredash: DEBUG
+    org.hibernate: ERROR
+  pattern:
+    file: "%d{dd-MM-yyyy} | %d{HH:mm:ss.SSS} | %-20.20thread | %5p | %-25.25logger{25} | %m%n"
+    console: "%d{dd-MM-yyyy} | %d{HH:mm:ss.SSS} | %-20.20thread | %5p | %-25.25logger{25} | %m%n"
+  path: logs
+  file: ${logging.path}/log.log
+
+app:
+  mongodb:
+    uri: "mongodb+srv://${spring.data.mongo.username}:${spring.data.mongo.password}@hardwaredash.z05tx.gcp.mongodb.net/${spring.data.mongo.database}"
+    authentication-database: admin
+    username: hardware_admin
+    password: D%40rkGh0st
+    database: hardware-db
+    host: hardwaredash.z05tx.gcp.mongodb.net
+  # App Properties
+  login:
+    jwtSecret: hdSecretKey
+    jwtExpirationMs: 86400000

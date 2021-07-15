@@ -6,6 +6,7 @@ import com.mongodb.WriteConcern
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
 import org.springframework.data.mongodb.MongoDatabaseFactory
@@ -21,27 +22,34 @@ import java.util.*
 
 @Configuration
 @EnableMongoRepositories(basePackages = ["com.hardwaredash.app"])
+@ComponentScan(basePackages = ["com.hardwaredash.app.*"])
 @EnableTransactionManagement
-class MongoConfig : AbstractMongoClientConfiguration() {
-    private val username = "hardware_admin"
-    private val password = "D%40rkGh0st"
-    private val dbname = "hardware-db"
+class MongoConfig(
+    val appConfig: AppConfig,
+    val mongoConfig: MongoConfiguration
+) : AbstractMongoClientConfiguration() {
 
     private val mongoConverters = mutableListOf<Converter<*, *>>()
 
-    override fun getDatabaseName(): String {
-        return "hardware-db"
-    }
+    override fun getDatabaseName() = mongoConfig.database
 
+
+    @Bean
     override fun mongoClient(): MongoClient {
-        val connectionString =
-            ConnectionString("mongodb+srv://$username:$password@hardwaredash.z05tx.gcp.mongodb.net/$dbname")
+        val connectionString = ConnectionString(getProfileBasedConnectionString())
         val mongoClientSettings = MongoClientSettings.builder()
             .applyConnectionString(connectionString)
             .retryWrites(true)
             .writeConcern(WriteConcern("majority"))
             .build()
         return MongoClients.create(mongoClientSettings)
+    }
+
+    private fun getProfileBasedConnectionString(): String {
+        return when (appConfig.environment) {
+            "dev" -> "mongodb://${mongoConfig.host}:${mongoConfig.port}/${mongoConfig.database}?retryWrites=false"
+            else -> "mongodb+srv://${mongoConfig.username}:${mongoConfig.password}@${mongoConfig.host}/${mongoConfig.database}"
+        }
     }
 
     public override fun getMappingBasePackages(): List<String> {
@@ -80,4 +88,6 @@ class MongoConfig : AbstractMongoClientConfiguration() {
             return source.toInstant().atOffset(ZoneOffset.UTC)
         }
     }
+
+
 }

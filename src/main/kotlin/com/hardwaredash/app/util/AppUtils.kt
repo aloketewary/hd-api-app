@@ -31,13 +31,13 @@ fun <T> httpPatchSuccess(result: T, desc: String = "Patch Success"): CommonHttpR
     )
 }
 
-fun <T> httpCommonError(exception: Exception, desc: String = "Error"): CommonHttpResponse<T> {
+fun <T> httpCommonError(exception: Exception?, desc: String = "Error"): CommonHttpResponse<T> {
     return CommonHttpResponse(
         desc = desc,
         result = null,
         status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
         success = false,
-        error = CommonHttpError(exception.message)
+        error = CommonHttpError(exception?.message ?: desc)
     )
 }
 

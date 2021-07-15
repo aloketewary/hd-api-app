@@ -3,6 +3,7 @@ package com.hardwaredash.app.entity
 import com.hardwaredash.app.dto.ProductResponse
 import com.hardwaredash.app.dto.ProductVariantResponse
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 import java.time.OffsetDateTime
@@ -11,7 +12,7 @@ import java.time.OffsetDateTime
 data class ProductEntity(
     @Id val id: String? = null,
     @Field("product_name") val productName: String,
-    @Field("product_variants") val productVariants: ProductVariants,
+    @DBRef val productVariants: ProductVariants,
     @Field("is_active") val isActive: Boolean,
     @Field("created_by") val createdBy: String?,
     @Field("created_date") val createdDate: OffsetDateTime?,
