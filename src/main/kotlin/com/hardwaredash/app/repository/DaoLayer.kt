@@ -1,7 +1,10 @@
 package com.hardwaredash.app.repository
 
 import com.hardwaredash.app.entity.*
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.mongodb.repository.MongoRepository
+import org.springframework.data.mongodb.repository.Query
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -11,7 +14,17 @@ interface ConfigDao : MongoRepository<ConfigEntity, String> {
 }
 
 @Repository
-interface ProductDao : MongoRepository<ProductEntity, String>
+interface ProductDao : MongoRepository<ProductEntity, String> {
+    @Query(
+        "{\$or:[ {'productName': /.*?0.*/}," +
+                "{'productsVariants.buyPrice': /.*?0.*/}," +
+                "{'productsVariants.wholeSalePrice': /.*?0.*/}," +
+                "{'productsVariants.sellingPrice': /.*?0.*/}," +
+                "{'productsVariants.stockTotal': /.*?0.*/}" +
+                "]}"
+    )
+    fun searchAndFindAll(searchQuery: String, page: Pageable): Page<ProductEntity>
+}
 
 @Repository
 interface ProductUnitDao : MongoRepository<ProductUnitEntity, String>
@@ -28,6 +41,3 @@ interface UserDao : MongoRepository<UserEntity, String> {
 interface RoleDao : MongoRepository<RoleEntity, String> {
     fun findByName(name: RoleEnum): Optional<RoleEntity>
 }
-
-@Repository
-interface ProductVariantDao : MongoRepository<ProductVariants, String>

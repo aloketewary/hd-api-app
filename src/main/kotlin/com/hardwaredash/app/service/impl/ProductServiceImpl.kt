@@ -6,24 +6,26 @@ import com.hardwaredash.app.dto.ProductVariantRequest
 import com.hardwaredash.app.entity.ProductEntity
 import com.hardwaredash.app.entity.ProductVariants
 import com.hardwaredash.app.middleware.ProductMiddleware
-import com.hardwaredash.app.middleware.ProductVariantMiddleware
 import com.hardwaredash.app.model.CommonHttpResponse
 import com.hardwaredash.app.service.ProductService
 import com.hardwaredash.app.util.*
 import mu.KotlinLogging
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.FileInputStream
 import java.time.OffsetDateTime
+
 
 private val logger = KotlinLogging.logger {}
 
 @Service
 class ProductServiceImpl(
     private val productMiddleware: ProductMiddleware,
-    private val productVariantMiddleware: ProductVariantMiddleware
-): ProductService {
+) : ProductService {
 
     override fun getAllProducts(): CommonHttpResponse<List<ProductResponse>> {
         logger.info { "Get all products" }
@@ -41,8 +43,7 @@ class ProductServiceImpl(
         logger.info { "Insert new product where data = $product" }
         return try {
             val productVariants = generateProductVariantsEntity(product.productVariant)
-            val insertedProductVariant = productVariantMiddleware.insert(productVariants)
-            val productEntity = generateProductEntity(product, insertedProductVariant)
+            val productEntity = generateProductEntity(product, productVariants)
             val savedProduct = productMiddleware.insert(productEntity)
             val productResponse = savedProduct.convertToResponse()
             httpPostSuccess(productResponse, "Product Created success")
@@ -117,10 +118,13 @@ class ProductServiceImpl(
                             )
                         )
                     }
-                    val productVariantList = productVariantMiddleware.insertAll(extractedProductVariantList.map {
-                        generateProductVariantsEntity(it)
-                    })
-                    val entityList = extractedProductList.mapIndexed { index, product -> generateProductEntity(product, productVariantList[index]) }
+                    val productVariantList = extractedProductVariantList.map { generateProductVariantsEntity(it) }
+                    val entityList = extractedProductList.mapIndexed { index, product ->
+                        generateProductEntity(
+                            product,
+                            productVariantList[index]
+                        )
+                    }
                     productMiddleware.insertAll(entityList)
                     httpPostSuccess("${extractedProductList.size} Product(s) inserted", "Bulk upload success")
                 }
@@ -142,21 +146,21 @@ class ProductServiceImpl(
     }
 
     private fun generateProductVariantsEntity(productVariant: ProductVariantRequest): ProductVariants = ProductVariants(
-            parentId = productVariant.parentId,
-            variant = productVariant.variant,
-            variantName = productVariant.variantName,
-            stockTotal = productVariant.stockTotal,
-            buyPrice = productVariant.buyPrice,
-            wholeSalePrice = productVariant.wholeSalePrice,
-            onSale = productVariant.onSale,
-            onSalePrice = productVariant.onSalePrice,
-            isActive = productVariant.isActive,
-            createdBy = "ADMIN",
-            createdDate = OffsetDateTime.now(),
-            sellingPrice = productVariant.sellingPrice,
-            unit = productVariant.unit,
-            multiText = productVariant.multiText,
-        )
+        parentId = productVariant.parentId,
+        variant = productVariant.variant,
+        variantName = productVariant.variantName,
+        stockTotal = productVariant.stockTotal,
+        buyPrice = productVariant.buyPrice,
+        wholeSalePrice = productVariant.wholeSalePrice,
+        onSale = productVariant.onSale,
+        onSalePrice = productVariant.onSalePrice,
+        isActive = productVariant.isActive,
+        createdBy = "ADMIN",
+        createdDate = OffsetDateTime.now(),
+        sellingPrice = productVariant.sellingPrice,
+        unit = productVariant.unit,
+        multiText = productVariant.multiText,
+    )
 
     override fun update(id: String, product: ProductRequest): CommonHttpResponse<ProductResponse> {
         logger.info { "Update existing config id = $id where data = $product" }
@@ -228,6 +232,32 @@ class ProductServiceImpl(
             } else {
                 httpCommonError(Exception("Delete Failure for id=$ids"))
             }
+        } catch (e: Exception) {
+            logger.error { e }
+            httpCommonError(e)
+        }
+    }
+
+    override fun getAllPageableProducts(
+        filter: String,
+        sortOrder: String,
+        page: Int,
+        size: Int
+    ): CommonHttpResponse<Page<ProductResponse>> {
+        logger.info { "Get all products as pageable object" }
+        return try {
+            val sortBy = if (sortOrder.toLowerCase().contains("asc")) Sort.Direction.ASC else Sort.Direction.DESC
+            val orders = mutableListOf<Sort.Order>()
+            if (sortOrder.contains(",")) {
+                orders.add(Sort.Order(sortBy, sortOrder.substringBefore(",")))
+            } else {
+                // sort=[field, direction]
+                orders.add(Sort.Order(sortBy, "id"))
+            }
+            val pageRequest = PageRequest.of(page, size, Sort.by(orders))
+            val allProducts = productMiddleware.searchAndFindAll(filter, pageRequest)
+            val listOfProductResponse = allProducts.map { it.convertToResponse() }
+            httpGetSuccess(listOfProductResponse)
         } catch (e: Exception) {
             logger.error { e }
             httpCommonError(e)

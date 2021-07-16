@@ -1,5 +1,6 @@
 package com.hardwaredash.app.util
 
+import com.hardwaredash.app.entity.ProductEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.util.*

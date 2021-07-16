@@ -24,7 +24,8 @@ class ProductController(
 
     @ApiOperation(value = "Update product")
     @PatchMapping("/v1/product/{id}")
-    fun updateProduct(@PathVariable id: String, @RequestBody product: ProductRequest) = productService.update(id, product)
+    fun updateProduct(@PathVariable id: String, @RequestBody product: ProductRequest) =
+        productService.update(id, product)
 
     @ApiOperation(value = "Delete product")
     @DeleteMapping("/v1/product/{id}")
@@ -37,4 +38,13 @@ class ProductController(
     @ApiOperation(value = "Delete List of product")
     @DeleteMapping("/v1/product/bulk/{ids}")
     fun deleteProducts(@PathVariable ids: String) = productService.deleteAllById(ids)
+
+    @ApiOperation(value = "Get all Products")
+    @GetMapping("/v1/products/pageable")
+    fun getAllProducts(
+        @RequestParam(name = "filter", defaultValue = "") filter: String,
+        @RequestParam(name = "sortOrder", defaultValue = "asc") sortOrder: String,
+        @RequestParam(name = "page", defaultValue = "0") page: Int,
+        @RequestParam(name = "size", defaultValue = "5") size: Int
+    ) = productService.getAllPageableProducts(filter, sortOrder, page, size)
 }

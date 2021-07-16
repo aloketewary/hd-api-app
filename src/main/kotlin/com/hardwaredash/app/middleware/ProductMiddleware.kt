@@ -16,8 +16,10 @@ class ProductMiddleware(
         val productList = productDao.findAll()
         return productList.filter { it.isActive }.toList()
     }
-
+    
     override fun getAll(pageable: Pageable): Page<ProductEntity> = productDao.findAll(pageable)
+
+    fun searchAndFindAll(filter: String, pageable: Pageable): Page<ProductEntity> = productDao.searchAndFindAll(filter, pageable)
 
     fun getAllByIds(ids: List<String>): MutableIterable<ProductEntity> {
         return productDao.findAllById(ids)

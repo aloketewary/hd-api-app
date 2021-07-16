@@ -1,6 +1,7 @@
 package com.hardwaredash.app.middleware
 
 import com.hardwaredash.app.entity.ConfigEntity
+import com.hardwaredash.app.entity.ProductEntity
 import com.hardwaredash.app.repository.ConfigDao
 import com.hardwaredash.app.repository.ProductUnitDao
 import com.hardwaredash.app.util.BasicCrud
@@ -18,7 +19,7 @@ class ConfigMiddleware(
         val configMap = mutableMapOf<String, Any>()
         val configList = configDao.findAll()
         val unitList = productUnitDao.findAll()
-        val configMapValue = configList.filter { it.isActive }.map { it.key to it.value }.toMap()
+        val configMapValue = configList.filter { it.isActive }.associate { it.key to it.value }
         val unitMapValue = unitList.filter { it.isActive }.map { it.convertToDtoResponse() }
         configMap.putAll(configMapValue)
         configMap["UNITS"] = unitMapValue

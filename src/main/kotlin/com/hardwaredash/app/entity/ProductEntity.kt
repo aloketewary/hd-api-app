@@ -12,7 +12,7 @@ import java.time.OffsetDateTime
 data class ProductEntity(
     @Id val id: String? = null,
     @Field("product_name") val productName: String,
-    @DBRef val productVariants: ProductVariants,
+    @Field("products_variants") val productVariants: ProductVariants,
     @Field("is_active") val isActive: Boolean,
     @Field("created_by") val createdBy: String?,
     @Field("created_date") val createdDate: OffsetDateTime?,
@@ -29,9 +29,8 @@ data class ProductEntity(
     }
 }
 
-@Document(collection = "products_variants")
 data class ProductVariants(
-    @Id val id: String? = null,
+    val id: String? = null,
     @Field("parent_id") val parentId: String,
     @Field val variant: String,
     @Field("variant_name") val variantName: String,
